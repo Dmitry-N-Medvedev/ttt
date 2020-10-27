@@ -107,4 +107,53 @@ describe('libt3', () => {
       expect(expectedError.size).to.equal(evenSize);
     }
   });
+
+  it('should tell if a number is even or odd', async () => {
+    const evenNumber = 2;
+    const oddNumber = 3;
+
+    expect(LibT3.isEven(evenNumber)).to.be.true;
+    expect(LibT3.isEven(oddNumber)).to.be.false;
+  });
+
+  it('should calculate diagonal indices of a field', async () => {
+    const erroneousSizeForAField = 4;
+    const verificationData = [
+      {
+        size: 3,
+        expectedIndices: {
+          backward: [0, 4, 8],
+          forward: [2, 4, 6],
+        },
+      },
+      {
+        size: erroneousSizeForAField,
+      },
+      {
+        size: 5,
+        expectedIndices: {
+          backward: [0, 6, 12, 18, 24],
+          forward: [4, 8, 12, 16, 20],
+        },
+      },
+    ];
+    let errors = [];
+
+    try {
+      for (const verificationDatum of verificationData) {
+        const calculatedIndices = LibT3.calculateDiagonalIndices(verificationDatum.size);
+    
+        expect(calculatedIndices).to.deep.equal(verificationDatum.expectedIndices);
+      }
+    } catch (error) {
+      errors.push(error);
+    } finally {
+      expect(errors).to.have.lengthOf(1);
+
+      for (const error of errors) {
+        expect(error).to.be.instanceof(EvenSizeError);
+        expect(error.size).to.equal(erroneousSizeForAField);
+      }
+    }
+  });
 });
