@@ -1,4 +1,4 @@
-export class BoundaryViolationError extends ReferenceError {
+export class CellOccupiedError extends ReferenceError {
   #cellid = null;
 
   constructor({ cellid }, ...params) {
@@ -6,7 +6,7 @@ export class BoundaryViolationError extends ReferenceError {
 
     this.#cellid = cellid;
 
-    ReferenceError.captureStackTrace(this, BoundaryViolationError);
+    ReferenceError.captureStackTrace(this, CellOccupiedError);
   }
 
   get cellid() {
