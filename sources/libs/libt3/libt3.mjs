@@ -74,6 +74,34 @@ export class LibT3 {
     });
   }
 
+  static getColumnIndicesByCell(size, cellid) {
+    const result = [];
+    let firstIndexOfColumn = Math.trunc(cellid / size) > 0 ? (cellid - size * Math.trunc(cellid / size)) : cellid;
+
+    do {
+      result.push(firstIndexOfColumn);
+
+      firstIndexOfColumn += size;
+    }
+    while (firstIndexOfColumn < Math.pow(size, 2));
+
+    return result;
+  }
+
+  static geRowIndicesByCell(size, cellid) {
+    const result = [];
+    let firstIndexOfRow = Math.trunc(cellid / size) > 0 ? Math.trunc(cellid / size) * size : 0;
+    const lastIndexOfRow = firstIndexOfRow + size;
+
+    do {
+      result.push(firstIndexOfRow);
+
+      firstIndexOfRow += 1;
+    } while (firstIndexOfRow < lastIndexOfRow);
+
+    return result;
+  }
+
   #isCellIdWithinBoundaries(cellid) {
     return cellid >= 0 && cellid < this.#cells.length;
   }
@@ -90,5 +118,7 @@ export class LibT3 {
     if (this.#isCellFree(cellid) === false) {
       throw new CellOccupiedError({ cellid });
     }
+
+    const columnIndices = LibT3.getColumnIndicesByCell(this.#config.size, cellid);
   }
 }

@@ -156,4 +156,53 @@ describe('libt3', () => {
       }
     }
   });
+
+  it('should getColumnIndicesByCell', async () => {
+    const verificationData = [
+      {
+        cellid: 0,
+        expectedIndices: [0, 3, 6],
+      },
+      {
+        cellid: 4,
+        expectedIndices: [1, 4, 7],
+      },
+      {
+        cellid: 8,
+        expectedIndices: [2, 5, 8],
+      },
+    ];
+
+    for (const verificationDatum of verificationData) {
+      libt3.move(verificationDatum.cellid);
+
+      const resolvedColumnIndices = LibT3.getColumnIndicesByCell(LibT3Config.size, verificationDatum.cellid);
+
+      expect(resolvedColumnIndices).to.have.ordered.members(verificationDatum.expectedIndices);
+    }
+  });
+
+  it('should geRowIndicesByCell', async () => {
+    const verificationData = [{
+        cellid: 0,
+        expectedIndices: [0, 1, 2],
+      },
+      {
+        cellid: 4,
+        expectedIndices: [3, 4, 5],
+      },
+      {
+        cellid: 8,
+        expectedIndices: [6, 7, 8],
+      },
+    ];
+
+    for (const verificationDatum of verificationData) {
+      libt3.move(verificationDatum.cellid);
+
+      const resolvedRowIndices = LibT3.geRowIndicesByCell(LibT3Config.size, verificationDatum.cellid);
+
+      expect(resolvedRowIndices).to.have.ordered.members(verificationDatum.expectedIndices);
+    }
+  });
 });
