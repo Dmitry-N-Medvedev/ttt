@@ -4,6 +4,9 @@ import {
 import {
   CellOccupiedError,
 } from './errors/CellOccupiedError.mjs';
+import {
+  EvenSizeError,
+} from './errors/EvenSizeError.mjs';
 
 export class LibT3 {
   #config = {
@@ -15,12 +18,20 @@ export class LibT3 {
   static F = 0;
 
   constructor(config) {
+    if (LibT3.isEvenSize(config.size) === true) {
+      throw new EvenSizeError({ size: config.size });
+    }
+
     this.#config = {
       ...this.#config,
       ...config,
     };
 
     this.#cells = (new Array(Math.pow(this.#config.size, 2)).fill(LibT3.F));
+  }
+
+  static isEvenSize(size) {
+    return (size % 2) === 0;
   }
 
   #isCellIdWithinBoundaries(cellid) {
