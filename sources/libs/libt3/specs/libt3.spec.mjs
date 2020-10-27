@@ -6,6 +6,9 @@ import {
 import {
   BoundaryViolationError,
 } from '../errors/BoundaryViolationError.mjs';
+import {
+  CellOccupiedError,
+} from '../errors/CellOccupiedError.mjs';
 
 const {
   describe,
@@ -60,14 +63,27 @@ describe('libt3', () => {
     for (const cellid of invalidCellIds) {
       try {
         libt3.move(cellid);
-      } catch (error) {
-        expect(error).to.be.instanceof(BoundaryViolationError);
-        expect(error.cellid).to.equal(cellid);
+      } catch (boundaryViolationError) {
+        expect(boundaryViolationError).to.be.instanceof(BoundaryViolationError);
+        expect(boundaryViolationError.cellid).to.equal(cellid);
 
         expectedCellIds.push(cellid);
       }
     }
 
-    expect(expectedCellIds).to.have.ordered.members(invalidCellIds);
+    return expect(expectedCellIds).to.have.ordered.members(invalidCellIds);
+  });
+
+  it('should fail to make a move to an occuppied cell', async () => {
+    const toTheSameCell = 0;
+
+    libt3.move(toTheSameCell);
+
+    try {
+      libt3.move(toTheSameCell);
+    } catch (cellOccupiedError) {
+      expect(cellOccupiedError).to.be.instanceof(CellOccupiedError);
+      expect(cellOccupiedError.cellid).to.equal(cellid);
+    }
   });
 });
