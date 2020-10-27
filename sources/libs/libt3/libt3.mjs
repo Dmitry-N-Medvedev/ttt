@@ -13,15 +13,14 @@ export class LibT3 {
     size: 3,
   };
   #cells = null;
+  #diagonalIndices = null;
+
   static X = 1;
   static O = -1;
   static F = 0;
 
   constructor(config) {
-    if (LibT3.isEven(config.size) === true) {
-      throw new EvenSizeError({ size: config.size });
-    }
-
+    this.#diagonalIndices = LibT3.calculateDiagonalIndices(config.size);
     this.#config = {
       ...this.#config,
       ...config,
