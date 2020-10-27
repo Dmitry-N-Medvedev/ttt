@@ -1,0 +1,21 @@
+{
+  "name": "@dmitry-n-medvedev/tic-tac-toe",
+  "version": "0.0.1",
+  "description": "tic-tac-toe game",
+  "engines": {
+    "node": "=15.0.1",
+    "pnpm": "=5.10.2"
+  },
+  "engineStrict": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dmitry-N-Medvedev/ttt.git"
+  },
+  "author": "Dmitry N. Medvedev <dmitry.medvedev@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Dmitry-N-Medvedev/ttt/issues"
+  },
+  "homepage": "https://github.com/Dmitry-N-Medvedev/ttt#readme",
+  "devDependencies": {}
+}
