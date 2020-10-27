@@ -20,7 +20,10 @@ export class LibT3 {
 
   move(cellid) {
     if (this.#isCellIdWithinBoundaries(cellid) === false) {
-      throw new BoundaryViolationError(cellid, `${cellid} is not within the boundaries of the field`);
+      throw new BoundaryViolationError({
+        cellid,
+        message: `not within the boundaries of the field`,
+      });
     }
   }
 }
