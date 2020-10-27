@@ -9,6 +9,9 @@ import {
 import {
   CellOccupiedError,
 } from '../errors/CellOccupiedError.mjs';
+import {
+  EvenSizeError,
+} from '../errors/EvenSizeError.mjs';
 
 const {
   describe,
@@ -84,6 +87,24 @@ describe('libt3', () => {
     } catch (cellOccupiedError) {
       expect(cellOccupiedError).to.be.instanceof(CellOccupiedError);
       expect(cellOccupiedError.cellid).to.equal(cellid);
+    }
+  });
+
+  it('should fail to instantiate game field with even size', async () => {
+    const evenSize = 4;
+    const LibT3ConfigEvenSize = Object.freeze({
+      size: evenSize,
+    });
+    let libt3EvenSize = null;
+    let expectedError = null;
+
+    try {
+      libt3EvenSize = new LibT3(LibT3ConfigEvenSize);
+    } catch (evenSizeError) {
+      expectedError = evenSizeError;
+    } finally {
+      expect(expectedError).to.be.instanceof(EvenSizeError);
+      expect(expectedError.size).to.equal(evenSize);
     }
   });
 });
