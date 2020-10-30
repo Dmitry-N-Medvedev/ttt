@@ -18,6 +18,7 @@
     "coverage": "./node_modules/.bin/c8 report --reporter=text-lcov --reporter=lcov | ./node_modules/.bin/coveralls"
   },
   "dependencies": {
+    "@dmitry-n-medvedev/libt3": "workspace:^0.0.0",
     "compression": "^1.7.1",
     "polka": "next",
     "sirv": "^1.0.0"
