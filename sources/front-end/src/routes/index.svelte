@@ -1,51 +1,54 @@
 <script>
-  // eslint-disable-next-line node/no-extraneous-import
-  import successkid from 'images/successkid.jpg';
+  import Cell from '../components/Cell.svelte';
+  export let size = 3;
+
+  let cells = null;
+  let defaultValue = 0;
+
+  $: if (size) {
+    cells = new Array(Math.pow(size, 2)).fill({}).map((_, id) => ({ id, value: defaultValue }));
+  }
+
+  const handleUserMove = ({ detail }) => {
+    console.debug('handleUserMove', detail);
+  };
 </script>
 
 <style>
-	h1, figure, p {
-		text-align: center;
-		margin: 0 auto;
-	}
+  #game-field-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 auto;
+    align-items: center;
+    justify-content: center;
 
-	h1 {
-		font-size: 2.8em;
-		text-transform: uppercase;
-		font-weight: 700;
-		margin: 0 0 0.5em 0;
-	}
-
-	figure {
-		margin: 0 0 1em 0;
-	}
-
-	img {
-		width: 100%;
-		max-width: 400px;
-		margin: 0 0 1em 0;
-	}
-
-	p {
-		margin: 1em auto;
-	}
-
-	@media (min-width: 480px) {
-		h1 {
-			font-size: 4em;
-		}
-	}
+    height: 100%;
+    width: 100%;
+  }
+  
+  #game-field {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    grid-gap: 0.125vw;
+  
+    background-color: var(--game-field-background-color);
+  
+    width: 25vw;
+    height: 25vw;
+  }
 </style>
 
 <svelte:head>
-	<title>Sapper project template</title>
+	<title>t3</title>
 </svelte:head>
 
-<h1>Great success!</h1>
-
-<figure>
-	<img alt="Success Kid" src="{successkid}">
-	<figcaption>Have fun with Sapper!</figcaption>
-</figure>
-
-<p><strong>Try editing this file (src/routes/index.svelte) to test live reloading.</strong></p>
+<article id="game-field-container">
+  <section id="game-field">
+    {#each cells as cell(cell.id)}
+        <Cell id={cell.id} class='cell' on:user:move={handleUserMove}>{cell.value}</Cell>
+      {:else}
+        no cells defined
+    {/each}
+  </section>
+</article>
