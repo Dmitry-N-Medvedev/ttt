@@ -23,7 +23,10 @@
 
 	li {
 		display: block;
-		float: left;
+    float: left;
+    
+    pointer-events: all;
+    cursor: pointer;
 	}
 
 	[aria-current] {
