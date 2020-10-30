@@ -219,7 +219,7 @@ describe('libt3', () => {
   //   }
   // });
 
-  it.only('should use BlockerStrategy', async () => {
+  it('should use BlockerStrategy', async () => {
     const gameFieldSize = 3;
     const libMatrix = new LibMatrix({
       size: gameFieldSize,
@@ -302,18 +302,6 @@ describe('libt3', () => {
         printMatrix();
       };
 
-      libMatrix.set(0, XOF.O);
-      libMatrix.set(1, XOF.X);
-      libMatrix.set(2, XOF.O);
-
-      libMatrix.set(3, XOF.O);
-      libMatrix.set(4, XOF.X);
-      libMatrix.set(5, XOF.O);
-
-      libMatrix.set(6, XOF.X);
-      libMatrix.set(7, XOF.O);
-      libMatrix.set(8, XOF.X);
-
       do {
         const player = (resolvePlayer.next()).value;
   
@@ -324,15 +312,13 @@ describe('libt3', () => {
         case GameStates.WE_HAVE_A_WINNER: {
           const winnerName = (resolvePlayerByWonSymbol(moveResult.wonSymbol)).name;
 
-          console.log(`we have a winner: ${winnerName}`);
-
           return resolve();
         }
         case GameStates.DRAW: {
           return resolve();
         }
         default: {
-          return reject('\ngame ended with', moveResult);
+          return reject('game failed with', moveResult);
         }
       }
     });
