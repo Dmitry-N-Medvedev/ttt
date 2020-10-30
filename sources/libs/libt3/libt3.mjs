@@ -7,118 +7,83 @@ import {
 import {
   EvenSizeError,
 } from './errors/EvenSizeError.mjs';
+import {
+  GameStates,
+} from './constants/GameStates.mjs';
+import {
+  XOF,
+} from './constants/XOF.mjs';
 
 export class LibT3 {
   #config = {
-    size: 3,
+    name: null,
+    size: null,
+    strategy: null,
+    symbols: {
+      human: null,
+      machine: null,
+      empty: null,
+    },
+    matrix: null,
   };
-  #cells = null;
-  #diagonalIndices = null;
-
-  static X = 1;
-  static O = -1;
-  static F = 0;
+  #vectorIndices = null;
 
   constructor(config) {
-    this.#diagonalIndices = LibT3.calculateDiagonalIndices(config.size);
-    this.#config = {
-      ...this.#config,
-      ...config,
-    };
-
-    this.#cells = (new Array(Math.pow(this.#config.size, 2)).fill(LibT3.F));
+    this.#config = config;
   }
 
-  static isEven(size) {
-    return (size % 2) === 0;
+  get name() {
+    return this.#config.name;
   }
 
-  static calculateDiagonalIndices(size) {
-    if (LibT3.isEven(size) === true) {
-      throw new EvenSizeError({
-        size,
-      });
-    }
+  get matrix() {
+    return this.#config.matrix;
+  }
 
-    const calculateBackwardIndices = (size) => {
-      const upperBound = Math.pow(size, 2);
-      const result = [];
-      let index = 0;
+  get ownSymbol() {
+    return this.#config.symbols.machine;
+  }
 
-      do {
-        result.push(index);
-
-        index += (size + 1);
-      } while (index < upperBound);
-
-      return result;
+  move() {
+    const result = {
+      symbolIndex: null,
+      gameState: GameStates.INVALID,
     };
 
-    const calculateForwardIndices = (size) => {
-      const upperBound = Math.pow(size, 2) - 1;
-      const result = [];
-      let index = size - 1;
-
-      do {
-        result.push(index);
-
-        index += (size - 1);
-      } while (index < upperBound);
-
-      return result;
-    };
-
-    return ({
-      backward: calculateBackwardIndices(size),
-      forward: calculateForwardIndices(size),
+    const processResult = this.#config.strategy.process({
+      cells: this.#config.matrix.cells,
+      vectors: this.#config.matrix.vectors,
+      opponentSymbol: this.#config.symbols.human,
+      ownSymbol: this.#config.symbols.machine,
+      emptySymbol: this.#config.symbols.empty,
     });
-  }
 
-  static getColumnIndicesByCell(size, cellid) {
-    const result = [];
-    let firstIndexOfColumn = Math.trunc(cellid / size) > 0 ? (cellid - size * Math.trunc(cellid / size)) : cellid;
+    switch (processResult.gameState) {
+      case GameStates.INVALID: {
+        console.error('gameState: INVALID');
 
-    do {
-      result.push(firstIndexOfColumn);
+        break;
+      }
+      case GameStates.IN_PROGRESS: {
+        this.#config.matrix.set(processResult.symbolIndex, this.#config.symbols.machine);
 
-      firstIndexOfColumn += size;
-    }
-    while (firstIndexOfColumn < Math.pow(size, 2));
+        break;
+      }
+      case GameStates.DRAW: {
+        console.debug('GameStates.DRAW');
 
-    return result;
-  }
-
-  static geRowIndicesByCell(size, cellid) {
-    const result = [];
-    let firstIndexOfRow = Math.trunc(cellid / size) > 0 ? Math.trunc(cellid / size) * size : 0;
-    const lastIndexOfRow = firstIndexOfRow + size;
-
-    do {
-      result.push(firstIndexOfRow);
-
-      firstIndexOfRow += 1;
-    } while (firstIndexOfRow < lastIndexOfRow);
-
-    return result;
-  }
-
-  #isCellIdWithinBoundaries(cellid) {
-    return cellid >= 0 && cellid < this.#cells.length;
-  }
-
-  #isCellFree(cellid) {
-    return this.#cells[cellid] === LibT3.F;
-  }
-
-  move(cellid) {
-    if (this.#isCellIdWithinBoundaries(cellid) === false) {
-      throw new BoundaryViolationError({ cellid });
+        break;
+      }
+      case GameStates.WE_HAVE_A_WINNER: {
+        break;
+      }
     }
 
-    if (this.#isCellFree(cellid) === false) {
-      throw new CellOccupiedError({ cellid });
-    }
+    const r = Object.freeze({
+      ...result,
+      ...processResult,
+    });
 
-    const columnIndices = LibT3.getColumnIndicesByCell(this.#config.size, cellid);
+    return r;
   }
 }
