@@ -41,11 +41,23 @@
   const player = new LibT3(playerConfig);
 
   let cells = null;
-  let defaultValue = '';
+  let defaultValue = null;
 
   $: if (gameFieldSize) {
-    cells = new Array(Math.pow(gameFieldSize, 2)).fill({}).map((_, id) => ({ id, value: defaultValue }));
+    cells = new Array(Math.pow(gameFieldSize, 2)).fill({}).map((_, id) => ({ id, value: defaultValue, winner: false }));
   }
+
+  const highlightWinningVector = (vector) => {
+    cells = cells.map((cell) => {
+      if (vector.includes(cell.id)) {
+        cell.winner = true;
+      }
+
+      return cell;
+    });
+
+    console.debug('highlightWinningVector', vector, cells);
+  };
 
   const handleUserMove = ({ detail: { index } }) => {
     libMatrix.set(index, XOF.X);
@@ -56,6 +68,8 @@
 
     if (moveResult.gameState === GameStates.WE_HAVE_A_WINNER) {
       const { wonSymbol } = moveResult;
+      highlightWinningVector(moveResult.vector);
+
       console.debug('WE_HAVE_A_WINNER', moveResult.vector, 'wonSymbol:', wonSymbol);
     }
   };
@@ -68,7 +82,7 @@
         return {
           ...cell,
           ...{
-            value: value,
+            value,
           },
         }
       }
@@ -122,7 +136,7 @@
 <article id="game-field-container">
   <section id="game-field">
     {#each cells as cell(cell.id)}
-        <Cell id={cell.id} class='cell' on:user:move={handleUserMove}>{cell.value}</Cell>
+        <Cell id={cell.id} class='cell' on:user:move={handleUserMove} value={cell.value} winner={cell.winner} />
       {:else}
         no cells defined
     {/each}
