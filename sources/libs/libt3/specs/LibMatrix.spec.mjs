@@ -221,7 +221,7 @@ describe('LibMatrix', () => {
     return run();
   });
 
-  it.only('should calculate vectors', async () => {
+  it('should calculate vectors', async () => {
     const libMatrixConfig = Object.freeze({
       size: 5,
     });
