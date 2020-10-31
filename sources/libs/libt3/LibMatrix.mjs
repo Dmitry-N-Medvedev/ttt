@@ -60,7 +60,7 @@ export class LibMatrix {
 
     const calculateRowVectors = (arrayOfCells, result) => {
       for (let i = 0; i < arrayOfCells.length; i += size) {
-        const vector = (new Array(size)).fill(null).map((_, index) => index + i);
+        const vector = (new Array(size)).fill(0).map((_, index) => index + i);
 
         result.push(vector);
       }
