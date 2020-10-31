@@ -1,97 +1,108 @@
+import {
+  EvenSizeError,
+} from './errors/EvenSizeError.mjs';
+import {
+  CellOccupiedError,
+} from './errors/CellOccupiedError.mjs';
+
+const DEFAULT_CELL_VALUE = null;
+const EVENT_SET = 'set';
+const EVENT_CLEAR = 'clear';
+const KNOWN_EVENTS = Object.freeze([EVENT_SET, EVENT_CLEAR]);
+
 export class LibMatrix {
-  #cells = null;
   #config = {
-    size: 3,
-    emptyCellValue: null,
+    size: null,
   };
-  #onDataCallback = null;
-  #vectors = null;
+  #cells = null;
+  #eventRoutingTable = new Map(
+    LibMatrix.eventNames.map((eventName) => [eventName, []]),
+  );
 
-  constructor(config) {
-    this.#config = config;
-    this.#cells = (new Array(Math.pow(this.#config.size, 2)).fill(this.#config.emptyCellValue));
-    this.#vectors = LibMatrix.resolveVectors(this.#cells);
-  }
-
-  static resolveVectors(cells) {
-    const size = Math.sqrt(cells.length);
-    const result = [];
-
-    const resolveRowVectors = (array, width, accumulator) => {
-      for (let rowFirstIndex = 0; rowFirstIndex < array.length; rowFirstIndex += width) {
-        const rowIndices = [];
-  
-        for (let rowIndex = rowFirstIndex; rowIndex < rowFirstIndex + width; rowIndex += 1) {
-          rowIndices.push(rowIndex);
-        }
-  
-        accumulator.push(rowIndices);
-      }
-    };
-
-    const resolveColumnVectors = (array, width, accumulator) => {
-      for (let columnFirstIndex = 0; columnFirstIndex < width; columnFirstIndex += 1) {
-        const columnIndices = [];
-
-        for (let columnIndex = columnFirstIndex; columnIndex < array.length; columnIndex += size) {
-          columnIndices.push(columnIndex);
-        }
-
-        accumulator.push(columnIndices);
-      }
-    };
-
-    const resolveDiagonalVectors = (array, width, accumulator) => {
-      const resolveDiagonalBackwardsVector = (a, w, acc) => {
-        const step = w + 1;
-        const vector = [];
-
-        for (let index = 0; index < a.length; index += step) {
-          vector.push(index);
-        }
-
-        acc.push(vector);
-      };
-
-      const resolveDiagonalForwardsVector = (a, w, acc) => {
-        const step = w - 1;
-        const vector = [];
-
-        for (let index = w - 1; index < a.length - 1; index += step) {
-          vector.push(index);
-        }
-
-        acc.push(vector);
-      };
-
-      resolveDiagonalBackwardsVector(array, width, accumulator);
-      resolveDiagonalForwardsVector(array, width, accumulator);
+  constructor(config = null) {
+    if (config === null) {
+      throw new ReferenceError('config is undefined');
     }
 
-    resolveRowVectors(cells, size, result);
-    resolveColumnVectors(cells, size, result);
-    resolveDiagonalVectors(cells, size, result);
+    if (Number.isInteger(config.size) === false) {
+      throw new EvalError(`${config.size} is not integer`);
+    }
 
-    return Object.freeze(result);
+    if (config.size % 2 === 0) {
+      throw new EvenSizeError({ size: config.size });
+    }
+
+    this.#config = {
+      ...config,
+    };
+
+    this.#cells = (new Array(Math.pow(this.#config.size, 2))).fill(DEFAULT_CELL_VALUE);
+
+    this.#eventRoutingTable = new Map();
   }
 
-  set ondata(callback) {
-    this.#onDataCallback = callback;
+  static get eventNames() {
+    return KNOWN_EVENTS;
   }
 
   get cells() {
     return this.#cells;
   }
 
-  get vectors() {
-    return this.#vectors;
+  on(eventName = null, callback = null) {
+    if (eventName === null) {
+      throw new ReferenceError('eventName is undefined');
+    }
+
+    if (typeof eventName !== 'string') {
+      throw new EvalError('eventName is not a string');
+    }
+
+    if (eventName.length === 0) {
+      throw new EvalError('eventName is an empty string');
+    }
+
+    if (LibMatrix.eventNames.includes(eventName) === false) {
+      throw new EvalError(`unknown event name: ${eventName}. Appropriate events names: [${LibMatrix.eventNames}]`);
+    }
+
+    if (typeof callback !== 'function') {
+      throw new EvalError('callback is not a function');
+    }
+
+    if (this.#eventRoutingTable.has(eventName)) {
+      const handlersArray = this.#eventRoutingTable.get(eventName);
+
+      if (handlersArray.some((existingCallback) => existingCallback === callback) === false) {
+        handlersArray.push(callback);
+      }
+    } else {
+      this.#eventRoutingTable.set(eventName, [callback]);
+    }
   }
 
   set(index, value) {
+    if (this.#cells[index] !== DEFAULT_CELL_VALUE) {
+      throw new CellOccupiedError({ index });
+    }
+
     this.#cells[index] = value;
 
-    if (this.#onDataCallback && typeof this.#onDataCallback === 'function') {
-      this.#onDataCallback(index, value);
-    }
+    const eventData = Object.freeze({
+      index,
+      value,
+    });
+
+    (this.#eventRoutingTable.get(EVENT_SET) ?? []).forEach((callback) => {
+      callback(eventData);
+    });
+  }
+
+  clear() {
+    this.#cells.length = 0;
+
+    (this.#eventRoutingTable.get(EVENT_CLEAR) ?? []).forEach((callback) => {
+      callback();
+    });
   }
 }

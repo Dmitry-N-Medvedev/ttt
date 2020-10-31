@@ -7,7 +7,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "LibT3",
+      "name": "LibMatrix",
       "skipFiles": [
         "<node_internals>/**"
       ],
@@ -16,7 +16,7 @@
       "cwd": "${workspaceFolder}/sources/libs/libt3",
       "args": [
         "--spec",
-        "specs/LibT3.spec.mjs"
+        "specs/LibMatrix.spec.mjs"
       ],
       "env": {
         "NODE_ENV": "testing"
