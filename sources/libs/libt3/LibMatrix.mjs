@@ -5,7 +5,7 @@ import {
   CellOccupiedError,
 } from './errors/CellOccupiedError.mjs';
 
-const DEFAULT_CELL_VALUE = null;
+const DEFAULT_CELL_VALUE = 0;
 const EVENT_SET = 'set';
 const EVENT_CLEAR = 'clear';
 const KNOWN_EVENTS = Object.freeze([EVENT_SET, EVENT_CLEAR]);
