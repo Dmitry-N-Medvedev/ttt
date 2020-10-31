@@ -19,7 +19,7 @@ const {
   expect,
 } = chai;
 
-describe('LibStrategyController', () => {
+describe(LibStrategyFactory.name, () => {
   it('should get a list of available strategy names', async () => {
     const libStrategyFactory = new LibStrategyFactory();
 

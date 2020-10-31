@@ -6,7 +6,7 @@ export class EvenSizeError extends ReferenceError {
 
     this.#size = size;
 
-    ReferenceError.captureStackTrace(this, EvenSizeError);
+    EvenSizeError.captureStackTrace(this, EvenSizeError);
   }
 
   get size() {

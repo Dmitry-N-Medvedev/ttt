@@ -21,6 +21,7 @@
 
 
   import Cell from '../components/Cell.svelte';
+import { detach } from 'svelte/internal';
   
   const gameFieldSize = 3;
   const libMatrix = new LibMatrix({
@@ -59,8 +60,16 @@
     console.debug('highlightWinningVector', vector, cells);
   };
 
-  const handleUserMove = ({ detail: { index } }) => {
-    libMatrix.set(index, XOF.X);
+  const handleUserMove = ({ detail }) => {
+    console.debug('handleUserMove.detail', detail);
+
+    const { index } = detail;
+
+    try {
+      libMatrix.set(index, XOF.X);
+    } catch (error) {
+      return;
+    }
 
     const moveResult = player.move();
 

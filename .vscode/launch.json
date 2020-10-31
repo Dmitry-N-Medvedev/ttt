@@ -21,6 +21,24 @@
       "env": {
         "NODE_ENV": "testing"
       }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "LibBlockerStrategy",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/sources/libs/libt3/node_modules/mocha/bin/_mocha",
+      "stopOnEntry": false,
+      "cwd": "${workspaceFolder}/sources/libs/libt3",
+      "args": [
+        "--spec",
+        "specs/LibBlockerStrategy.spec.mjs"
+      ],
+      "env": {
+        "NODE_ENV": "testing"
+      }
     }
   ]
 }

@@ -19,7 +19,7 @@ const {
   expect,
 } = chai;
 
-describe('LibMatrix', () => {
+describe(LibMatrix.name, () => {
   it('should fail to instantiate LibMatrix with even size', async() => {
     const libMatrixConfig = Object.freeze({
       size: 4,
@@ -84,11 +84,12 @@ describe('LibMatrix', () => {
     });
     const libMatrix = new LibMatrix(libMatrixConfig);
     const sameCellIndex = 0;
+    const nonDefaultValue = 1;
     let error = null;
 
     try {
-      libMatrix.set(sameCellIndex, 0);
-      libMatrix.set(sameCellIndex, 0);
+      libMatrix.set(sameCellIndex, nonDefaultValue);
+      libMatrix.set(sameCellIndex, nonDefaultValue);
     } catch (cellOccupiedError) {
       error = cellOccupiedError;
     } finally {
