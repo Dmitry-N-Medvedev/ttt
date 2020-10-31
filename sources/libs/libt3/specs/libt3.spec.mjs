@@ -7,8 +7,6 @@ import {
 const {
   describe,
   it,
-  beforeEach,
-  afterEach,
 } = mocha;
 const {
   expect,
@@ -19,12 +17,8 @@ mocha.Runner.prototype.uncaught = (error) => {
   console.error(error);
 };
 
-describe('libt3', () => {
-  beforeEach(() => {});
-
-  afterEach(() => {});
-
-  it('should do it', async() => {
+describe(LibT3.name, () => {
+  it.only('should do it', async() => {
     const libT3Config = Object.freeze({
       matrix: {
         size: 3,
