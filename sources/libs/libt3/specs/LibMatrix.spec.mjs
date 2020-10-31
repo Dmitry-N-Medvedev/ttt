@@ -220,4 +220,38 @@ describe('LibMatrix', () => {
 
     return run();
   });
+
+  it.only('should calculate vectors', async () => {
+    const libMatrixConfig = Object.freeze({
+      size: 5,
+    });
+    const libMatrix = new LibMatrix(libMatrixConfig);
+    const expectedVectors = Object.freeze([
+      [0, 1, 2, 3, 4],
+      [5, 6, 7, 8, 9],
+      [10, 11, 12, 13, 14],
+      [15, 16, 17, 18, 19],
+      [20, 21, 22, 23, 24],
+      [0, 5, 10, 15, 20],
+      [1, 6, 11, 16, 21],
+      [2, 7, 12, 17, 22],
+      [3, 8, 13, 18, 23],
+      [4, 9, 14, 19, 24],
+      [0, 6, 12, 18, 24],
+      [4, 8, 12, 16, 20]
+    ]);
+
+    expect(libMatrix.vectors).to.have.deep.members(expectedVectors);
+
+    let error = null;
+
+    try {
+      libMatrix.vectors.push([ null, null, null, null, null ]);
+    } catch (typeError) {
+      error = typeError;
+    } finally {
+      expect(error).to.be.instanceof(TypeError);
+      expect(error.message).to.match(/object is not extensible$/);
+    }
+  });
 });
