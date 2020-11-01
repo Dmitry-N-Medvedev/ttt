@@ -18,7 +18,7 @@ mocha.Runner.prototype.uncaught = (error) => {
 };
 
 describe(LibT3.name, () => {
-  it('should do it', async() => {
+  it.only('should play the game', async() => {
     const libT3Config = Object.freeze({
       matrix: {
         size: 3,
