@@ -19,6 +19,11 @@ const {
   expect,
 } = chai;
 
+mocha.Runner.prototype.uncaught = (error) => {
+  // eslint-disable-next-line no-console
+  console.error(error);
+};
+
 describe(LibStrategyFactory.name, () => {
   it('should get a list of available strategy names', async () => {
     const libStrategyFactory = new LibStrategyFactory();

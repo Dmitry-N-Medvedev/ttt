@@ -19,6 +19,11 @@ const {
   expect,
 } = chai;
 
+mocha.Runner.prototype.uncaught = (error) => {
+  // eslint-disable-next-line no-console
+  console.error(error);
+};
+
 describe(LibMatrix.name, () => {
   it('should fail to instantiate LibMatrix with even size', async() => {
     const libMatrixConfig = Object.freeze({

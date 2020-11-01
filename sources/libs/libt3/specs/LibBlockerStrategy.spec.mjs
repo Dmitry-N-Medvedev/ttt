@@ -16,6 +16,11 @@ const {
   expect,
 } = chai;
 
+mocha.Runner.prototype.uncaught = (error) => {
+  // eslint-disable-next-line no-console
+  console.error(error);
+};
+
 describe(LibBlockerStrategy.name, () => {
   it('should fail on incorrectly defined cells', async () => {
     const undefinedCellsArray = Object.freeze([

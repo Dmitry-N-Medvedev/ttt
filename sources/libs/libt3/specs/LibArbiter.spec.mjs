@@ -12,6 +12,11 @@ const {
   expect,
 } = chai;
 
+mocha.Runner.prototype.uncaught = (error) => {
+  // eslint-disable-next-line no-console
+  console.error(error);
+};
+
 describe(LibArbiter.name, () => {
   it(`should register players of both ${[...LibArbiter.playerTypes].join(' and ')} types`, async () => {
     const players = {};
