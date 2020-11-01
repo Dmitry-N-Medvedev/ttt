@@ -109,15 +109,62 @@ describe(LibBlockerStrategy.name, () => {
       size: 3,
     });
     const enemySymbol = 1;
+    const ownSymbol = -1;
     const emptySymbol = 0;
     const cellIndex = 0;
-    const libMatrix = new LibMatrix(libMatrixConfig);
+    const cases = Object.freeze([
+      {
+        occupyIndices: {
+          X: [],
+          O: [],
+        },
+        possibleResolvedCellIndices: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+      },
+      {
+        occupyIndices: {
+          X: [0],
+          O: [],
+        },
+        possibleResolvedCellIndices: [1, 2, 3, 4, 5, 6, 7, 8],
+      },
+      {
+        occupyIndices: {
+          X: [0, 1],
+          O: [3],
+        },
+        possibleResolvedCellIndices: [2],
+      },
+      {
+        occupyIndices: {
+          X: [0, 4, 5, 6, 7],
+          O: [1, 2, 3, 8],
+        },
+        possibleResolvedCellIndices: [undefined],
+      },
+      {
+        occupyIndices: {
+          X: [],
+          O: [1, 2, 3, 8],
+        },
+        possibleResolvedCellIndices: [0, 4, 5, 6, 7],
+      },
+    ]);
     const libBlockerStrategy = new LibBlockerStrategy();
+    
+    for (const { occupyIndices: { X, O }, possibleResolvedCellIndices } of cases) {
+      const libMatrix = new LibMatrix(libMatrixConfig);
 
-    libMatrix.set(cellIndex, enemySymbol);
+      for (const x of X) {
+        libMatrix.set(x, enemySymbol);
+      }
 
-    const resolvedCellIndex = libBlockerStrategy.process(libMatrix.cells, libMatrix.vectors, emptySymbol, enemySymbol);
+      for (const o of O) {
+        libMatrix.set(o, ownSymbol);
+      }
 
-    expect(libMatrix.cells[resolvedCellIndex]).to.equal(emptySymbol);
+      const resolvedCellIndex = libBlockerStrategy.process(libMatrix.cells, libMatrix.vectors, emptySymbol, enemySymbol);
+
+      expect(possibleResolvedCellIndices).to.include(resolvedCellIndex);
+    }
   });
 });
