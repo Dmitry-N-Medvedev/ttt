@@ -60,8 +60,6 @@ export class LibT3 {
 
     switch (processResult.gameState) {
       case GameStates.INVALID: {
-        console.error('gameState: INVALID');
-
         break;
       }
       case GameStates.IN_PROGRESS: {
@@ -70,8 +68,6 @@ export class LibT3 {
         break;
       }
       case GameStates.DRAW: {
-        console.debug('GameStates.DRAW');
-
         break;
       }
       case GameStates.WE_HAVE_A_WINNER: {

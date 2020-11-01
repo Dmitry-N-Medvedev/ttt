@@ -1,17 +1,112 @@
 <script>
+  import {
+    onMount,
+    onDestroy,
+  } from 'svelte';
+  import {
+    LibT3,
+  } from '@dmitry-n-medvedev/libt3/libt3.mjs';
+  import {
+    LibMatrix,
+  } from '@dmitry-n-medvedev/libt3/LibMatrix.mjs';
+  import {
+    XOF,
+  } from '@dmitry-n-medvedev/libt3/constants/XOF.mjs';
+  import {
+    BlockerStrategy,
+  } from '@dmitry-n-medvedev/libt3/strategies/BlockerStrategy.mjs';
+  import {
+    GameStates,
+  } from '@dmitry-n-medvedev/libt3/constants/GameStates.mjs';
   import Cell from '../components/Cell.svelte';
-  export let size = 3;
+  
+  const FIELD_SIZE = 3;
+  let cells = [];
+  let libMatrix = null;
+  let libT3Config = null;
+  let libT3 = null;
+  let moveResult = null;
 
-  let cells = null;
-  let defaultValue = 0;
+  const handleMatrixData = (index, value) => {
+    cells = libMatrix.cells.map((value, index) => ({ id: index, value }));
+  };
 
-  $: if (size) {
-    cells = new Array(Math.pow(size, 2)).fill({}).map((_, id) => ({ id, value: defaultValue }));
+  $: if (moveResult !== null) {
+    const {
+      gameState,
+    } = moveResult;
+
+    switch(gameState) {
+      case GameStates.IN_PROGRESS: {
+        const {
+          symbolIndex,
+        } = moveResult;
+
+        libMatrix.set(symbolIndex, XOF.O);
+
+        break;
+      }
+      case GameStates.DRAW: {
+        console.debug('GameStates.DRAW');
+
+        break;
+      }
+      case GameStates.WE_HAVE_A_WINNER: {
+        console.debug('GameStates.WE_HAVE_A_WINNER', moveResult);
+
+        break;
+      }
+      case GameStates.INVALID: {
+        console.debug('GameStates.INVALID', moveResult);
+
+        break;
+      }
+    }
   }
 
-  const handleUserMove = ({ detail }) => {
-    console.debug('handleUserMove', detail);
+  $: if (libMatrix !== null) {
+    libMatrix.ondata = handleMatrixData;
+    cells = libMatrix.cells.map((value, index) => ({ id: index, value }));
+  }
+
+  const handleUserMove = ({ detail: { index } }) => {
+    libMatrix.set(index, XOF.X);
+
+    moveResult = libT3.move();
   };
+
+  onMount(() => {
+    libMatrix = new LibMatrix({
+      size: FIELD_SIZE,
+      emptyCellValue: XOF.F,
+    });
+    libT3Config = Object.freeze({
+      name: 'machine',
+      size: FIELD_SIZE,
+      strategy: new BlockerStrategy(),
+      symbols: {
+        human: XOF.X,
+        machine: XOF.O,
+        empty: XOF.F,
+      },
+      matrix: libMatrix,
+    });
+    libT3 = new LibT3(libT3Config);
+  });
+
+  onDestroy(() => {
+    if (libMatrix) {
+      libMatrix = null;
+    }
+
+    if (libT3Config) {
+      libT3Config = null;
+    }
+
+    if (libT3) {
+      libT3 = null;
+    }
+  });
 </script>
 
 <style>
@@ -46,7 +141,7 @@
 <article id="game-field-container">
   <section id="game-field">
     {#each cells as cell(cell.id)}
-        <Cell id={cell.id} class='cell' on:user:move={handleUserMove}>{cell.value}</Cell>
+        <Cell id={cell.id} class='cell' on:user:move={handleUserMove} value={cell.value} />
       {:else}
         no cells defined
     {/each}

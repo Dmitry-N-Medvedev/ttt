@@ -40,7 +40,7 @@ export class BlockerStrategy {
   //   return Object.freeze(result);
   // }
 
-  #calculateVectorWeight(vector = null, cells = null) {
+  calculateVectorWeight(vector = null, cells = null) {
     const r = vector.reduce((acc, indexValue) => {
       return acc + cells[indexValue];
     }, 0) / vector.length;
@@ -48,11 +48,11 @@ export class BlockerStrategy {
     return r;
   }
 
-  #resolveCandidateCellIndex(vector = null, cells = null, emptySymbol = null) {
+  resolveCandidateCellIndex(vector = null, cells = null, emptySymbol = null) {
     return (vector === null || cells === null) ? -1 : (vector.filter((cellIndex) => cells[cellIndex] === emptySymbol))[0];
   }
 
-  #resolveCandidateVectorIndex(vectors = null) {
+  resolveCandidateVectorIndex(vectors = null) {
     const V = vectors.slice();
 
     const heaviestVectors = Array
@@ -68,13 +68,13 @@ export class BlockerStrategy {
     return (V.find((vector) => vector.index === heaviestVectorIndex) ?? { index: -1 }).index;
   }
 
-  #resolveWonVector(cells = null, vectors = null, opponentSymbol = null, ownSymbol = null, emptySymbol = null) {
+  resolveWonVector(cells = null, vectors = null, opponentSymbol = null, ownSymbol = null, emptySymbol = null) {
     const V = vectors.slice();
     const size = Math.sqrt(cells.length);
     const result = vectors
       .map((vector) => ({
         vector,
-        weight: this.#calculateVectorWeight(vector, cells),
+        weight: this.calculateVectorWeight(vector, cells),
       }))
       .filter(({ vector, weight }) => [
         opponentSymbol,
@@ -90,7 +90,7 @@ export class BlockerStrategy {
       gameState: GameStates.INVALID,
     };
 
-    const wonVectors = this.#resolveWonVector(cells, vectors, opponentSymbol, ownSymbol, emptySymbol);
+    const wonVectors = this.resolveWonVector(cells, vectors, opponentSymbol, ownSymbol, emptySymbol);
 
     if (wonVectors.length > 0) {
       return Object.freeze({
@@ -109,12 +109,12 @@ export class BlockerStrategy {
     const vectorWeightsInfoSorted = vectors
       .map((vector, index) => ({
         index,
-        weight: this.#calculateVectorWeight(vector, cells),
+        weight: this.calculateVectorWeight(vector, cells),
       }))
       .sort((a, b) => (a.weight - b.weight));
 
-    result.symbolIndex = this.#resolveCandidateCellIndex(
-      vectors[this.#resolveCandidateVectorIndex(vectorWeightsInfoSorted)],
+    result.symbolIndex = this.resolveCandidateCellIndex(
+      vectors[this.resolveCandidateVectorIndex(vectorWeightsInfoSorted)],
       cells,
       emptySymbol,
     );
