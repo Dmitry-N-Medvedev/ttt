@@ -27,13 +27,16 @@
   let libT3 = null;
   let moveResult = null;
   let gState = null;
+  let shouldStopPointerEvents = false;
 
   const handleMatrixData = (/* index, value */) => {
     cells = libMatrix.cells.map((value, index) => ({ id: index, value }));
   };
 
   const handleResetButtonClick = () => {
+    gState = null;
     libMatrix.reset();
+    shouldStopPointerEvents = false;
   };
 
   $: if (moveResult !== null) {
@@ -55,11 +58,18 @@
       }
       case GameStates.DRAW: {
         gState = 'DRAW';
+        shouldStopPointerEvents = true;
 
         break;
       }
       case GameStates.WE_HAVE_A_WINNER: {
-        gState = 'WE HAVE A WINNER';
+        const {
+          vector,
+          wonSymbol,
+        } = moveResult;
+
+        gState = wonSymbol === XOF.X ? 'YOU WON' : 'YOU LOST';
+        shouldStopPointerEvents = true;
 
         console.debug('GameStates.WE_HAVE_A_WINNER', moveResult);
 
@@ -67,6 +77,7 @@
       }
       case GameStates.INVALID: {
         gState = 'INVALID';
+        shouldStopPointerEvents = true;
 
         console.debug('GameStates.INVALID', moveResult);
 
@@ -166,6 +177,11 @@
     width: 12rem;
     height: 6rem;
   }
+
+  .shouldStopPointerEvents,
+  :global(.shouldStopPointerEvents > *) {
+    pointer-events: none !important;
+  }
 </style>
 
 <svelte:head>
@@ -174,7 +190,7 @@
 
 <article id="game-field-container">
   <section id="game-state">{gState ?? ''}</section>
-  <section id="game-field">
+  <section id="game-field" class:shouldStopPointerEvents>
     {#each cells as cell(cell.id)}
         <Cell id={cell.id} class='cell' on:user:move={handleUserMove} value={cell.value} />
       {:else}
