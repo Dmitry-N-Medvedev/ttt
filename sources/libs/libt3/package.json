@@ -3,7 +3,7 @@
   "description": "[lib] tic-tac-toe",
   "version": "0.0.0",
   "type": "module",
-  "main": "libt3.mjs",
+  "main": "LibT3.mjs",
   "engines": {
     "node": "15.0.1",
     "pnpm": "5.10.2"

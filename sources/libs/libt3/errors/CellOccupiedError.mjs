@@ -1,15 +1,15 @@
 export class CellOccupiedError extends ReferenceError {
-  #cellid = null;
+  #index = null;
 
-  constructor({ cellid }, ...params) {
+  constructor({ index }, ...params) {
     super(...params);
 
-    this.#cellid = cellid;
+    this.#index = index;
 
-    ReferenceError.captureStackTrace(this, CellOccupiedError);
+    CellOccupiedError.captureStackTrace(this, CellOccupiedError);
   }
 
-  get cellid() {
-    return this.#cellid;
+  get index() {
+    return this.#index;
   }
 }

@@ -9,6 +9,7 @@
   --game-field-background-color: hsl(0, 0%, 95%);
   --game-field-cell-background-color: hsl(0, 0%, 98%);
   --game-field-cell-background-color-hover: hsl(0, 0%, 100%);
+  --game-cell-winner-fill-color: hsl(219, 79%, 66%);
 }
 
 html {

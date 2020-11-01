@@ -1,89 +1,56 @@
 import {
-  BoundaryViolationError,
-} from './errors/BoundaryViolationError.mjs';
+  LibMatrix,
+} from './LibMatrix.mjs';
 import {
-  CellOccupiedError,
-} from './errors/CellOccupiedError.mjs';
-import {
-  EvenSizeError,
-} from './errors/EvenSizeError.mjs';
-import {
-  GameStates,
-} from './constants/GameStates.mjs';
-import {
-  XOF,
-} from './constants/XOF.mjs';
+  LibArbiter,
+} from './LibArbiter.mjs';
 
 export class LibT3 {
   #config = {
-    name: null,
-    size: null,
-    strategy: null,
-    symbols: {
-      human: null,
-      machine: null,
-      empty: null,
+    matrix: {
+      size: null,
     },
-    matrix: null,
   };
-  #vectorIndices = null;
+  #libMatrix = null;
+  #libArbiter = null;
+  #onMatrixSetEventHandler = null;
 
   constructor(config) {
-    this.#config = config;
-  }
-
-  get name() {
-    return this.#config.name;
-  }
-
-  get matrix() {
-    return this.#config.matrix;
-  }
-
-  get ownSymbol() {
-    return this.#config.symbols.machine;
-  }
-
-  move() {
-    const result = {
-      symbolIndex: null,
-      gameState: GameStates.INVALID,
+    this.#config = {
+      ...config,
     };
 
-    const processResult = this.#config.strategy.process({
-      cells: this.#config.matrix.cells,
-      vectors: this.#config.matrix.vectors,
-      opponentSymbol: this.#config.symbols.human,
-      ownSymbol: this.#config.symbols.machine,
-      emptySymbol: this.#config.symbols.empty,
-    });
+    // LibMatrix
+    this.#libMatrix = new LibMatrix(this.#config.matrix);
+    this.#libMatrix.on(LibMatrix.eventSet, this.#handleSetEvent);
 
-    switch (processResult.gameState) {
-      case GameStates.INVALID: {
-        console.error('gameState: INVALID');
+    // LibArbiter
+    this.#libArbiter = new LibArbiter();
+  }
 
-        break;
-      }
-      case GameStates.IN_PROGRESS: {
-        this.#config.matrix.set(processResult.symbolIndex, this.#config.symbols.machine);
+  #handleSetEvent({ index, value }) {
+    console.debug(`#handleSetEvent(${index}, ${value})`);
+  }
 
-        break;
-      }
-      case GameStates.DRAW: {
-        console.debug('GameStates.DRAW');
+  get cells() {
+    return this.#libMatrix.cells;
+  }
 
-        break;
-      }
-      case GameStates.WE_HAVE_A_WINNER: {
-        break;
-      }
+  set onMatrixSet(value = null) {
+    if (value !== null && this.#onMatrixSetEventHandler !== value) {
+      this.#onMatrixSetEventHandler = value;
+    }
+  }
+
+  move(index = null) {
+    if (index === null) {
+      throw new TypeError('index is undifined');
     }
 
-    const r = Object.freeze({
-      ...result,
-      ...processResult,
-    });
+    if (Number.isInteger(index) === false) {
+      throw new TypeError('index is not an integer');
+    }
 
-    return r;
+    this.#libMatrix.set(index, null);
   }
 }
