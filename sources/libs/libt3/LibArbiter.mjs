@@ -22,6 +22,14 @@ export class LibArbiter {
     };
   }
 
+  static get playerTypeHuman() {
+    return PLAYER_TYPE_HUMAN;
+  }
+
+  static get playerTypeMachine() {
+    return PLAYER_TYPE_MACHINE;
+  }
+
   static get eventNames() {
     return KNOWN_EVENTS;
   }

@@ -43,6 +43,14 @@ export class LibMatrix {
     this.#eventRoutingTable = new Map();
   }
 
+  static get eventSet() {
+    return EVENT_SET;
+  }
+
+  static get eventClear() {
+    return EVENT_CLEAR;
+  }
+
   static get eventNames() {
     return KNOWN_EVENTS;
   }

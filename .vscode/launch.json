@@ -59,6 +59,45 @@
       "env": {
         "NODE_ENV": "testing"
       }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "LibT3",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/sources/libs/libt3/node_modules/mocha/bin/_mocha",
+      "stopOnEntry": false,
+      "cwd": "${workspaceFolder}/sources/libs/libt3",
+      "args": [
+        "--allow-uncaught",
+        "--async-only",
+        "--bail",
+        "--check-leaks",
+        "--exit",
+        "--forbid-only",
+        "--forbid-pending",
+        "--slow",
+        "50",
+        "--timeout",
+        "1000",
+        "--color",
+        "--diff",
+        "--full-trace",
+        "--inline-diffs",
+        "--reporter",
+        "spec",
+        "--no-config",
+        "--no-opts",
+        "--spec",
+        "./specs/LibT3.spec.mjs"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "env": {
+        "NODE_ENV": "testing"
+      }
     }
   ]
 }
