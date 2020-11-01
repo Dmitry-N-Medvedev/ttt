@@ -39,6 +39,7 @@ export class LibMatrix {
 
     this.#cells = (new Array(Math.pow(this.#config.size, 2))).fill(DEFAULT_CELL_VALUE);
     this.#vectors = LibMatrix.calculateVectors(this.#cells);
+    // TODO: check if the following is still required
     this.#eventRoutingTable = new Map();
   }
 
