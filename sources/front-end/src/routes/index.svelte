@@ -26,9 +26,14 @@
   let libT3Config = null;
   let libT3 = null;
   let moveResult = null;
+  let gState = null;
 
-  const handleMatrixData = (index, value) => {
+  const handleMatrixData = (/* index, value */) => {
     cells = libMatrix.cells.map((value, index) => ({ id: index, value }));
+  };
+
+  const handleResetButtonClick = () => {
+    libMatrix.reset();
   };
 
   $: if (moveResult !== null) {
@@ -38,6 +43,8 @@
 
     switch(gameState) {
       case GameStates.IN_PROGRESS: {
+        gState = 'IN PROGRESS';
+
         const {
           symbolIndex,
         } = moveResult;
@@ -47,16 +54,20 @@
         break;
       }
       case GameStates.DRAW: {
-        console.debug('GameStates.DRAW');
+        gState = 'DRAW';
 
         break;
       }
       case GameStates.WE_HAVE_A_WINNER: {
+        gState = 'WE HAVE A WINNER';
+
         console.debug('GameStates.WE_HAVE_A_WINNER', moveResult);
 
         break;
       }
       case GameStates.INVALID: {
+        gState = 'INVALID';
+
         console.debug('GameStates.INVALID', moveResult);
 
         break;
@@ -132,6 +143,29 @@
     width: 25vw;
     height: 25vw;
   }
+
+  #game-state,
+  #reset-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 4rem;
+  }
+
+  #game-state {
+    margin-bottom: 2rem;
+  }
+
+  #reset-section {
+    margin-top: 2rem;
+  }
+
+  #reset-section > button {
+    pointer-events: all;
+    cursor: pointer;
+    width: 12rem;
+    height: 6rem;
+  }
 </style>
 
 <svelte:head>
@@ -139,11 +173,15 @@
 </svelte:head>
 
 <article id="game-field-container">
+  <section id="game-state">{gState ?? ''}</section>
   <section id="game-field">
     {#each cells as cell(cell.id)}
         <Cell id={cell.id} class='cell' on:user:move={handleUserMove} value={cell.value} />
       {:else}
         no cells defined
     {/each}
+  </section>
+  <section id="reset-section">
+    <button on:click|preventDefault|stopPropagation={handleResetButtonClick}>reset</button>
   </section>
 </article>

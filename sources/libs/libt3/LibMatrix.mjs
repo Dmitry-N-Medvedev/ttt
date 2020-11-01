@@ -94,4 +94,12 @@ export class LibMatrix {
       this.#onDataCallback(index, value);
     }
   }
+
+  reset() {
+    this.#cells = (new Array(Math.pow(this.#config.size, 2)).fill(this.#config.emptyCellValue));
+
+    if (this.#onDataCallback && typeof this.#onDataCallback === 'function') {
+      this.#onDataCallback(null, null);
+    }
+  }
 }
